@@ -38,7 +38,7 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     clean: true,
-    publicPath: '/',
+    publicPath: 'http://localhost:3010/',
     path: path.resolve(__dirname, '../dist'),
     filename: 'static/bundle.[contenthash].js',
   },
