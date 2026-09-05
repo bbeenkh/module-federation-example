@@ -1,0 +1,9 @@
+// 바벨에 대한 플러그인 추가
+// ts 적용 안될때 : @babel/preset-typescript 추가
+{
+  "presets": [
+    "@babel/preset-env",
+    ["@babel/preset-react", { "runtime": "automatic" }],
+    "@babel/preset-typescript"
+  ]
+}

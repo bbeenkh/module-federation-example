@@ -1,0 +1,32 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "Module Federation Host App",
+  "private": true,
+  "scripts": {
+    "local": "cross-env LOCAL_ENV=true quasar dev",
+    "dev": "quasar dev",
+    "build": "quasar build"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.4",
+    "axios": "^0.21.1",
+    "core-js": "^3.6.5",
+    "cross-env": "^7.0.3",
+    "pinia": "^2.1.6",
+    "quasar": "^2.12.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "vue": "3",
+    "vue-router": "4.0.13",
+    "vuex": "^4.1.0"
+  },
+  "devDependencies": {
+    "@quasar/app-webpack": "^3.9.2",
+    "dotenv": "^16.0.0"
+  },
+  "volta": {
+    "node": "18.19.0",
+    "yarn": "1.22.22"
+  }
+}
