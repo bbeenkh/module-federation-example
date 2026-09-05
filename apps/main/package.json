@@ -6,8 +6,8 @@
   "scripts": {
     "local": "cross-env LOCAL_ENV=true quasar dev",
     "dev": "quasar dev",
-    "build": "quasar build",
-    "deploy": "vercel deploy --prod dist/spa --name module-federation-example-host"
+    "build": "cross-env NODE_ENV=production quasar build",
+    "deploy": "cd dist/spa && vercel deploy --prod --yes . --name module-federation-example-host"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.4",

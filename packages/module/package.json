@@ -8,7 +8,7 @@
     "build": "webpack --config ./webpack/webpack.common.js",
     "build:dev": "webpack --config ./webpack/webpack.dev.js",
     "build:prod": "webpack --config ./webpack/webpack.prod.js",
-    "deploy": "vercel deploy --prod dist --name module-federation-example-module"
+    "deploy": "cd dist && vercel deploy --prod --yes . --name module-federation-example-module"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.22.2",

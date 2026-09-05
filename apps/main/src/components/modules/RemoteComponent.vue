@@ -26,23 +26,22 @@ import {
   watch,
   toRaw,
   computed,
-} from 'vue';
-import { Container, Root, createRoot } from 'react-dom/client';
-import ReactDOM from 'react-dom';
-import React from 'react';
-import { useStore } from 'vuex';
-import toastNotify from 'src/stores/toastNotify';
-import dialogStore from 'src/stores/dialogStore';
-import { useRoute } from 'vue-router';
+} from "vue";
+import { Container, Root, createRoot } from "react-dom/client";
+import ReactDOM from "react-dom";
+import React from "react";
+import { useStore } from "vuex";
+import toastNotify from "src/stores/toastNotify"
+import dialogStore from "src/stores/dialogStore";
+import { useRoute } from "vue-router";
 
 const store = useStore();
-const hostProps = ref(store.getters['auth/getMfedHostProps']);
 const dialog = dialogStore();
 const notify = toastNotify();
 const route = useRoute();
 
 /**
- * React Remote Module props
+ * React Remote Module prop
  * @param props: remote 컴포넌트로 전달할 props
  * @param loadRemoteModule: module load 함수
  */
@@ -58,7 +57,7 @@ const props = defineProps({
   // 전체에 적용할 CSS 클래스
   containerStyle: {
     type: String,
-    default: '',
+    default: "",
   },
 });
 
@@ -71,28 +70,22 @@ const isLoading = ref(true);
 const updateReactComponent = () => {
   if (!!error.value || !remoteModule.value || !root.value) return;
   // prod 환경에서 실행시 에러발생하여 ReactDOM.render로 사용
-  // if (!reactRoot.value) {
-  //   reactRoot.value = createRoot(root.value); // bundle의 element를 넣음
-  // }
-  // // root에서 컴포넌트 초기화 진행
-  // reactRoot.value.render(
-  //   // TODO: update시에도 써도 되는지 체크
-  //   React.createElement(remoteModule.value, {
-  //     ...props.props,
-  //   })
-  // );
-  ReactDOM.render(
+  if (!reactRoot.value) {
+    reactRoot.value = createRoot(root.value); // bundle의 element를 넣음
+  }
+  // root에서 컴포넌트 초기화 진행
+  reactRoot.value.render(
+    // TODO: update시에도 써도 되는지 체크
     React.createElement(remoteModule.value, {
       ...props.props,
-      host_userInfo: toRaw(hostProps.value.host_userInfo),
-      host_token: toRaw(hostProps.value.host_token),
-      host_role: toRaw(hostProps.value.host_roles),
-      host_organizable: toRaw(hostProps.value.host_organizable),
-      host_openDialog: dialog.openDialog,
-      host_openToast: notify.openToast,
-    }),
-    root.value,
+    })
   );
+  // ReactDOM.render(
+  //   React.createElement(remoteModule.value, {
+  //     ...props.props,
+  //   }),
+  //   root.value
+  // );
 };
 
 onMounted(() => {
@@ -104,7 +97,7 @@ onMounted(() => {
       updateReactComponent();
     })
     .catch((e: Error) => {
-      console.error('Remote Module Load Error ', e);
+      console.error("Remote Module Load Error ", e);
       error.value = e;
     })
     .finally(() => {

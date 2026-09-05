@@ -38,7 +38,8 @@ module.exports = {
   entry: './src/index.tsx',
   output: {
     clean: true,
-    publicPath: 'http://localhost:3010/',
+    // TODO: env 분기필요
+    publicPath: 'https://module-federation-example-module.vercel.app/',
     path: path.resolve(__dirname, '../dist'),
     filename: 'static/bundle.[contenthash].js',
   },

@@ -4,7 +4,8 @@ const ModuleFederationPlugin =
   require('webpack').container.ModuleFederationPlugin;
 const { ProvidePlugin } = require('webpack');
 const dotenv = require('dotenv');
-dotenv.config({ path: path.resolve(__dirname, './.env') });
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 /**
  * Module Federation 공유 의존성 설정
