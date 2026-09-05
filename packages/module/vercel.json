@@ -1,0 +1,36 @@
+{
+  "outputDirectory": "dist",
+  "git": {
+    "deploymentEnabled": false
+  },
+  "routes": [
+    {
+      "src": "/user.remoteEntry.js",
+      "dest": "/user.remoteEntry.js"
+    },
+    {
+      "src": "/(.*\\.js)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.css)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.png)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.ico)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.svg)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}

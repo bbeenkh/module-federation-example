@@ -1,5 +1,20 @@
 {
+  "git": {
+    "deploymentEnabled": false
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/static/:file*",
+      "destination": "https://module-federation-example-module.vercel.app/static/:file*",
+      "permanent": false
+    },
+    {
+      "source": "/static/:file*",
+      "destination": "https://module-federation-example-module.vercel.app/static/:file*",
+      "permanent": false
+    }
   ]
 }

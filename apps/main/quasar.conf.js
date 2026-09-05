@@ -84,6 +84,15 @@ module.exports = configure(function (ctx) {
       server: { type: 'http' },
       port: 8081,
       open: false,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      },
+      proxy: {
+        '/remoteEntry': {
+          target: getRemoteUrlByEnv(),
+          changeOrigin: true,
+        },
+      },
     },
 
     framework: {
