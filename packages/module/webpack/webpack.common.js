@@ -8,7 +8,9 @@ const dotenv = require('dotenv');
 const BundleAnalyzerPlugin =
   require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
-dotenv.config({ path: path.resolve(__dirname, '../.env.development') });
+// 로컬에서만 .env 로드 (Vercel은 자체 환경변수 사용)
+const envFile = process.env.NODE_ENV === 'production' ? '../.env.production' : '../.env.development';
+dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 // 공유 의존성 관련 설정
 const moduleShared = {
@@ -23,6 +25,14 @@ const moduleShared = {
     eager: true,
     requiredVersion: '^18.2.0',
     strictVersion: true,
+  },
+  '@tanstack/react-query': {
+    singleton: true,
+    eager: true,
+  },
+  '@tanstack/query-core': {
+    singleton: true,
+    eager: true,
   },
 };
 
@@ -39,7 +49,7 @@ module.exports = {
   output: {
     clean: true,
     // TODO: env 분기필요
-    publicPath: 'https://module-federation-example-module.vercel.app/',
+    publicPath: 'https://module-federation-example-module.vercel.app'+'/',
     path: path.resolve(__dirname, '../dist'),
     filename: 'static/bundle.[contenthash].js',
   },

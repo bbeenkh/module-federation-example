@@ -23,6 +23,14 @@ const moduleShared = {
     requiredVersion: '^18.2.0',
     strictVersion: true,
   },
+  '@tanstack/react-query': {
+    singleton: true,
+    eager: true,
+  },
+  '@tanstack/query-core': {
+    singleton: true,
+    eager: true,
+  },
 };
 
 /**

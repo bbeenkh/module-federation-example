@@ -1,0 +1,13 @@
+- generic [ref=f3e3]:
+  - heading "Module Federation Host (Main)" [level=5] [ref=f3e4]
+  - paragraph [ref=f3e5]: "Remote module 로드 예시:"
+  - generic [ref=f3e9]:
+    - heading "Module Federation Remote Module" [level=2] [ref=f3e10]
+    - generic [ref=f3e11]:
+      - heading "Jotai Counter" [level=3] [ref=f3e12]
+      - paragraph [ref=f3e13]: "0"
+      - generic [ref=f3e14]:
+        - button "-1" [ref=f3e15]
+        - button "Reset" [ref=f3e16]
+        - button "+1" [ref=f3e17]
+    - paragraph [ref=f3e18]: Loading...
