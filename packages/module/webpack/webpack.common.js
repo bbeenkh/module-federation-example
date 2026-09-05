@@ -1,15 +1,19 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { DefinePlugin, EnvironmentPlugin, ProvidePlugin } = require('webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { ModuleFederationPlugin } = require('webpack').container;
-const dotenv = require('dotenv');
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const { DefinePlugin, EnvironmentPlugin, ProvidePlugin } = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const { ModuleFederationPlugin } = require("webpack").container;
+const dotenv = require("dotenv");
+const { FederatedTypesPlugin } = require("@module-federation/typescript");
 const BundleAnalyzerPlugin =
-  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 // 로컬에서만 .env 로드 (Vercel은 자체 환경변수 사용)
-const envFile = process.env.NODE_ENV === 'production' ? '../.env.production' : '../.env.development';
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? "../.env.production"
+    : "../.env.development";
 dotenv.config({ path: path.resolve(__dirname, envFile) });
 
 // 공유 의존성 관련 설정
@@ -17,50 +21,53 @@ const moduleShared = {
   react: {
     singleton: true, // 전역에서 단일 의존성만 사용
     eager: true, // 초기 로딩 지연 사용
-    requiredVersion: '^18.2.0', // 18.2.0 버전 사용으로 통일
+    requiredVersion: "^18.2.0", // 18.2.0 버전 사용으로 통일
     strictVersion: true,
   },
-  'react-dom': {
+  "react-dom": {
     singleton: true,
     eager: true,
-    requiredVersion: '^18.2.0',
+    requiredVersion: "^18.2.0",
     strictVersion: true,
-  },
-  '@tanstack/react-query': {
-    singleton: true,
-    eager: true,
-  },
-  '@tanstack/query-core': {
-    singleton: true,
-    eager: true,
   },
 };
 
+const federationConfig = {
+  name: "User",
+  filename: "user.remoteEntry.js",
+  exposes: {
+    "./mftest": "./src/entries/TestRoot",
+  },
+  // 공유 의존성 설정
+  shared: moduleShared,
+};
+
 module.exports = {
-  mode: 'development',
+  mode: "development",
   devServer: {
     port: 3010, // 포트 번호
     historyApiFallback: true,
-    host: 'localhost', // host명
+    host: "localhost", // host명
     liveReload: true,
-    watchFiles: [path.resolve(__dirname, '../src')],
+    watchFiles: [path.resolve(__dirname, "../src")],
   },
-  entry: './src/index.tsx',
+  entry: "./src/index.tsx",
   output: {
     clean: true,
     // TODO: env 분기필요
-    publicPath: 'https://module-federation-example-module.vercel.app'+'/',
-    path: path.resolve(__dirname, '../dist'),
-    filename: 'static/bundle.[contenthash].js',
+    // publicPath: 'https://module-federation-example-module.vercel.app'+'/',
+    publicPath: "http://localhost:3010" + "/",
+    path: path.resolve(__dirname, "../dist"),
+    filename: "static/bundle.[contenthash].js",
   },
   resolve: {
-    extensions: ['.ts', '.tsx', '.jsx', '.js', '.json'],
+    extensions: [".ts", ".tsx", ".jsx", ".js", ".json"],
     alias: {
-      '@': path.resolve(__dirname, '../src'),
+      "@": path.resolve(__dirname, "../src"),
     },
   },
   cache: {
-    type: process.env.NODE_ENV === 'development' ? 'memory' : 'filesystem',
+    type: process.env.NODE_ENV === "development" ? "memory" : "filesystem",
     buildDependencies: {
       config: [__filename],
     },
@@ -93,17 +100,17 @@ module.exports = {
         // Include ts, tsx, js, and jsx files.
         test: /\.(ts|js)x?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: "babel-loader",
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
+        use: [MiniCssExtractPlugin.loader, "css-loader", "postcss-loader"],
       },
       {
         test: /\.(png|jpe?g|gif|ico)$/i,
         use: [
           {
-            loader: 'file-loader',
+            loader: "file-loader",
           },
         ],
       },
@@ -111,39 +118,34 @@ module.exports = {
       {
         test: /\.svg$/i,
         issuer: /\.[jt]sx?$/,
-        use: ['@svgr/webpack'],
+        use: ["@svgr/webpack"],
       },
     ],
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'main.[contenthash].css',
-      chunkFilename: 'static/bundle.[contenthash].css',
+      filename: "main.[contenthash].css",
+      chunkFilename: "static/bundle.[contenthash].css",
       ignoreOrder: true,
     }),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: './public/index.html',
-      favicon: './public/favicon.ico',
+      filename: "index.html",
+      template: "./public/index.html",
+      favicon: "./public/favicon.ico",
     }),
     new CleanWebpackPlugin(),
     // env에 선언된 환경변수들 process.env로 접근하기 위해 추가
     new DefinePlugin({
-      'process.env': JSON.stringify(process.env),
+      "process.env": JSON.stringify(process.env),
     }),
     new EnvironmentPlugin({}),
     new ProvidePlugin({
-      process: 'process/browser',
+      process: "process/browser",
     }),
-    new ModuleFederationPlugin({
-      name: 'User',
-      filename: 'user.remoteEntry.js',
-      exposes: {
-        './mftest': './src/entries/TestRoot',
-      },
-      // 공유 의존성 설정
-      shared: moduleShared,
+    new ModuleFederationPlugin(federationConfig),
+    new FederatedTypesPlugin({
+      federationConfig,
     }),
-    process.env.ANALYZE === 'true' && new BundleAnalyzerPlugin(),
+    process.env.ANALYZE === "true" && new BundleAnalyzerPlugin(),
   ],
 };

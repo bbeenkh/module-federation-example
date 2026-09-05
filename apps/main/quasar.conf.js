@@ -1,11 +1,24 @@
-const { configure } = require('quasar/wrappers');
-const path = require('path');
+const { configure } = require("quasar/wrappers");
+const path = require("path");
 const ModuleFederationPlugin =
-  require('webpack').container.ModuleFederationPlugin;
-const { ProvidePlugin } = require('webpack');
-const dotenv = require('dotenv');
-const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+  require("webpack").container.ModuleFederationPlugin;
+const { ProvidePlugin } = require("webpack");
+const dotenv = require("dotenv");
+const { FederatedTypesPlugin } = require("@module-federation/typescript");
+const envFile =
+  process.env.NODE_ENV === "production" ? ".env.production" : ".env";
 dotenv.config({ path: path.resolve(__dirname, envFile) });
+
+/**
+ * Module Federation remote url 설정
+ */
+const getRemoteUrlByEnv = () => {
+  if (process.env.LOCAL_ENV === "true") {
+    return "http://localhost:3010";
+  } else {
+    return process.env.VUE_APP_REACT_MODULE_FED_URL;
+  }
+};
 
 /**
  * Module Federation 공유 의존성 설정
@@ -14,60 +27,46 @@ const moduleShared = {
   react: {
     singleton: true,
     eager: true,
-    requiredVersion: '^18.2.0',
+    requiredVersion: "^18.2.0",
     strictVersion: true,
   },
-  'react-dom': {
+  "react-dom": {
     singleton: true,
     eager: true,
-    requiredVersion: '^18.2.0',
+    requiredVersion: "^18.2.0",
     strictVersion: true,
-  },
-  '@tanstack/react-query': {
-    singleton: true,
-    eager: true,
-  },
-  '@tanstack/query-core': {
-    singleton: true,
-    eager: true,
   },
 };
 
-/**
- * Module Federation remote url 설정
- */
-const getRemoteUrlByEnv = () => {
-  if (process.env.LOCAL_ENV === 'true') {
-    return 'http://localhost:3010';
-  } else {
-    return process.env.VUE_APP_REACT_MODULE_FED_URL;
-  }
+const federationConfig = {
+  name: "main",
+  remotes: {
+    User: `User@${getRemoteUrlByEnv()}/user.remoteEntry.js`,
+  },
+  shared: moduleShared,
 };
 
 module.exports = configure(function (ctx) {
   return {
     supportTS: true,
 
-    boot: ['axios', 'pinia'],
+    boot: ["axios", "pinia"],
 
-    css: ['app.css'],
+    css: ["app.css"],
 
-    extras: [
-      'roboto-font',
-      'material-icons',
-    ],
+    extras: ["roboto-font", "material-icons"],
 
     build: {
-      env: require('dotenv').config().parsed,
-      vueRouterMode: 'hash',
+      env: require("dotenv").config().parsed,
+      vueRouterMode: "hash",
 
       extendWebpack(cfg) {
         // quasar & module federation 연동을 위해 entry 변경
-        cfg.entry = path.resolve(__dirname, './.quasar/main.js');
+        cfg.entry = path.resolve(__dirname, "./.quasar/main.js");
 
         cfg.plugins.push(
-          new (require('webpack').DefinePlugin)({
-            'process.env': JSON.stringify(process.env),
+          new (require("webpack").DefinePlugin)({
+            "process.env": JSON.stringify(process.env),
           }),
         );
 
@@ -75,29 +74,24 @@ module.exports = configure(function (ctx) {
          * Module Federation 리모트 모듈 설정
          */
         cfg.plugins.push(
-          new ModuleFederationPlugin({
-            name: 'main',
-            remotes: {
-              User: `User@${getRemoteUrlByEnv()}/user.remoteEntry.js`,
-            },
-            shared: moduleShared,
-          }),
+          new ModuleFederationPlugin(federationConfig),
           new ProvidePlugin({
-            process: 'process/browser.js',
+            process: "process/browser.js",
           }),
+          new FederatedTypesPlugin({ federationConfig }),
         );
       },
     },
 
     devServer: {
-      server: { type: 'http' },
+      server: { type: "http" },
       port: 8081,
       open: false,
       headers: {
-        'Access-Control-Allow-Origin': '*',
+        "Access-Control-Allow-Origin": "*",
       },
       proxy: {
-        '/remoteEntry': {
+        "/remoteEntry": {
           target: getRemoteUrlByEnv(),
           changeOrigin: true,
         },
@@ -106,8 +100,8 @@ module.exports = configure(function (ctx) {
 
     framework: {
       config: {},
-      lang: 'ko-KR',
-      plugins: ['Dialog', 'Notify', 'Loading'],
+      lang: "ko-KR",
+      plugins: ["Dialog", "Notify", "Loading"],
     },
 
     animations: [],
